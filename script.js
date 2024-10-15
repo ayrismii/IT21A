@@ -34,7 +34,7 @@ class Student extends Person {
     }
 }
 
-const student = new Student(" March", 24, "Instructor", "Programming");
+const student = new Student("ayrismi ", 19, "student", "object oriented programming");
 
 console.log("Name: " + student.name);
 console.log("Age: " + student.age);
