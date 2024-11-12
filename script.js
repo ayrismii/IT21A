@@ -1,47 +1,94 @@
-class Person {
-    #name;
-    #age;
-    #occupation;
-    #major;
-    constructor(name, age, occupation, major) {
-        this.#name = name;
-        this.#age = age;
-        this.#occupation = occupation;
-        this.#major = major;
+class ChartCreator {
+    constructor(dataUrl) {
+      this.dataUrl = dataUrl;
+      this.barCtx = document.getElementById("barChart");
+      this.pieCtx = document.getElementById("pieChart");
     }
-    get name() {
-        return this.#name;
+  
+    async fetchData() {
+      try {
+        const response = await fetch(this.dataUrl);
+        if (!response.ok) {
+          throw new Error("Network response was not ok " + response.statusText);
+        }
+        return await response.json();
+      } catch (error) {
+        console.error(
+          "There has been a problem with your fetch operation:",
+          error
+        );
+      }
     }
-
-    get age() {
-        return this.#age;
+  
+    createBarChart(data) {
+      new Chart(this.barCtx, {
+        type: "bar",
+        data: {
+          labels: ["green", "yellow", "red", "black", "Purple", "Orange"],
+          datasets: [
+            {
+              label: "# of Votes",
+              data: data.values,
+              borderWidth: 1,
+              backgroundColor: [
+                "green",
+                "yellow",
+                "red",
+                "black",
+                "purple",
+                "orange",
+              ],
+            },
+          ],
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true,
+            },
+          },
+        },
+      });
     }
-
-    get occupation() {
-        return this.#occupation;
+  
+    createPieChart(data) {
+      new Chart(this.pieCtx, {
+        type: "pie",
+        data: {
+          labels: ["green", "yellow", "red", "black", "Purple", "Orange"],
+          datasets: [
+            {
+              data: data.values,
+              backgroundColor: [
+                "green",
+                "yellow",
+                "red",
+                "black",
+                "purple",
+                "orange",
+              ],
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              position: "bottom",
+            },
+          },
+        },
+      });
     }
-
-    get major() {
-        return this.#major;
+  
+    async init() {
+      const data = await this.fetchData();
+      if (data) {
+        this.createBarChart(data);
+        this.createPieChart(data);
+      }
     }
-}
-
-
-class Student extends Person {
-
-    constructor(name, age, occupation, major) {
-        super(name, age, occupation, major);
-    }
-}
-
-const student = new Student("ayrismi ", 19, "student", "object oriented programming");
-
-console.log("Name: " + student.name);
-console.log("Age: " + student.age);
-console.log("Occupation: " + student.occupation);
-console.log("Major: " + student.major);
-
-document.getElementById("information").innerHTML = "Name: " + student.name + "<br>" +
-    "Age: " + student.age + "<br>" +
-    "Occupation: " + student.occupation + "<br>" +
-    "Major: " + student.major
+  }
+  
+  const chartCreator = new ChartCreator("data.json");
+  chartCreator.init();
